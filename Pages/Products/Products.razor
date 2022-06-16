@@ -1,0 +1,53 @@
+﻿@page "/products"
+@using System.Text.Json
+@using Microsoft.JSInterop.Implementation
+@inject ProductService productService
+@inject IJSRuntime JS
+
+<div class="card border-0 mb-3">
+    <div class="card-body">
+        <h3>Добавить продукт</h3>
+        <input class="btn btn-light text-start" @bind="product.title" placeholder="title" /><br />
+        <input class="btn btn-light text-start" @bind="product.description" placeholder="description" /><br />
+        <input class="btn btn-light text-start" @bind="product.image" placeholder="image" /><br />
+        <input class="btn btn-light text-start" @bind="product.count" placeholder="count" /><br />
+        <input class="btn btn-light text-start" @bind="product.price" placeholder="price" /><br />
+        <button class="btn btn-success" @onclick="async ()=>{await add(product); product=new product();}">Добавить</button>
+    </div>
+</div>
+
+<button class="btn btn-dark" @onclick="async()=>await загрузить()">Загрузить</button>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    @foreach (var item in products)
+    {
+        <div class="col">
+            <Product item="item" />
+        </div>
+    }
+</div>
+
+@code {
+    public List<product> products { get; set; } = new List<product>();
+    product product = new product();
+
+    protected async Task загрузить() 
+    {  
+        var module = await JS.InvokeAsync<IJSObjectReference>("import", "../js/firebase.js");
+        var data = await module.InvokeAsync<Dictionary<string, product>>("get");
+
+        products = new List<product>();
+        foreach (var item in data)
+        {
+            products.Add(item.Value);
+        }
+    }
+
+    async Task add(product product)
+    {
+        products.Add(product);
+        var module = await JS.InvokeAsync<IJSObjectReference>("import", "../js/firebase.js");  
+        await module.InvokeVoidAsync("writeData", product);
+    }
+
+}

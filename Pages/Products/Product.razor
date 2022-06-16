@@ -1,0 +1,14 @@
+﻿<div class="card h-100 bg-light text-dark border-0">
+    <div class="card-body">
+        <h3>@item.title</h3> 
+        <small>@item.description</small>
+        <small>количество: @item.count</small>
+        <small>цена: @item.price</small>
+    </div>
+    <img class="img-fluid rounded-bottom" src="@item.image"/>
+</div>
+
+@code {
+    [Parameter]
+    public product item { get; set; } = new product();
+}
