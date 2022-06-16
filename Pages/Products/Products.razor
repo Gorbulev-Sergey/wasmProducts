@@ -36,6 +36,11 @@
     protected override async Task OnInitializedAsync()
     {  
         module = await JS.InvokeAsync<IJSObjectReference>("import", "../js/firebase.js");
+    } 
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await загрузить();        
     }
 
     async Task загрузить()
