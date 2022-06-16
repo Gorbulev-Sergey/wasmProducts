@@ -1,5 +1,5 @@
 ﻿import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.8.3/firebase-app.js';
-import { getDatabase, ref, set, push, onValue, query } from "https://www.gstatic.com/firebasejs/9.8.3/firebase-database.js";
+import { getDatabase, ref, set, push, onValue, query} from "https://www.gstatic.com/firebasejs/9.8.3/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAi-71cKm9oV9x1hmc_hx3Kxe3HqmyK1L0",
@@ -14,12 +14,10 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
-
-
 //console.log(database);
 
 
-export function writeData(product) {
+export function write(product) {
     push(ref(database, 'products/'), {
         id: product.id,
         title: product.title,
@@ -32,8 +30,7 @@ export function writeData(product) {
 
 export function get() {
     let data;
-    const Ref = ref(database, 'products/');
-    onValue(Ref, (snapshot) => {
+    onValue(ref(database, 'products/'), (snapshot) => {
         data = snapshot.val();
     });
     return data;

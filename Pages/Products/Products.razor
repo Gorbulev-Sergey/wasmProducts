@@ -7,18 +7,19 @@
 <div class="card border-0 mb-3">
     <div class="card-body">
         <h3>Добавить продукт</h3>
-        <input class="btn btn-light text-start" @bind="product.title" placeholder="title" /><br />
-        <input class="btn btn-light text-start" @bind="product.description" placeholder="description" /><br />
-        <input class="btn btn-light text-start" @bind="product.image" placeholder="image" /><br />
-        <input class="btn btn-light text-start" @bind="product.count" placeholder="count" /><br />
-        <input class="btn btn-light text-start" @bind="product.price" placeholder="price" /><br />
-        <button class="btn btn-success" @onclick="async ()=>{await add(product); product=new product();}">Добавить</button>
+        <div class="mb-3">
+            <input class="btn btn-light text-start" @bind="product.title" placeholder="title" />
+            <input class="btn btn-light text-start" @bind="product.description" placeholder="description" />
+            <input class="btn btn-light text-start" @bind="product.image" placeholder="image" />
+            <input class="btn btn-light text-start" @bind="product.count" placeholder="count" />
+            <input class="btn btn-light text-start" @bind="product.price" placeholder="price" />
+        </div>
+        <button class="btn btn-success" @onclick="async () => {await add(product); product=new product();}">Добавить</button>
+        <button class="btn btn-dark" @onclick="async() => await загрузить()">Загрузить</button>
     </div>
 </div>
 
-<button class="btn btn-dark" @onclick="async()=>await загрузить()">Загрузить</button>
-
-<div class="row row-cols-1 row-cols-md-3 g-4">
+<div class="row row-cols-1 row-cols-md-3 g-4 mb-3">
     @foreach (var item in products)
     {
         <div class="col">
@@ -30,10 +31,15 @@
 @code {
     public List<product> products { get; set; } = new List<product>();
     product product = new product();
+    IJSObjectReference module;
 
-    protected async Task загрузить() 
+    protected override async Task OnInitializedAsync()
     {  
-        var module = await JS.InvokeAsync<IJSObjectReference>("import", "../js/firebase.js");
+        module = await JS.InvokeAsync<IJSObjectReference>("import", "../js/firebase.js");
+    }
+
+    async Task загрузить()
+    {
         var data = await module.InvokeAsync<Dictionary<string, product>>("get");
 
         products = new List<product>();
@@ -46,8 +52,7 @@
     async Task add(product product)
     {
         products.Add(product);
-        var module = await JS.InvokeAsync<IJSObjectReference>("import", "../js/firebase.js");  
-        await module.InvokeVoidAsync("writeData", product);
+        await module.InvokeVoidAsync("write", product);
     }
 
 }
